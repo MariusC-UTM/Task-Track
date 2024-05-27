@@ -1,3 +1,6 @@
+import sys
+print(sys.path)
+
 from gui import create_gui
 from scraper import import_tasks
 from database import create_table
