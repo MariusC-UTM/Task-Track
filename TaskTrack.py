@@ -1,5 +1,5 @@
 import sys
-print(sys.path)
+print('sys path:\n',sys.path)
 
 from gui import create_gui
 from scraper import import_tasks
