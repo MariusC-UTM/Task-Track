@@ -51,7 +51,7 @@ def create_gui():
     root = tk.Tk()
     root.title("University Task Manager")
     root.geometry("800x600")
-    root.resizable(False, False)
+    root.resizable(True, True)
 
     # Frames
     left_frame = tk.Frame(root, width = 200, bg = 'lightgrey')
@@ -72,13 +72,13 @@ def create_gui():
                                       values = ['laboratory work', 'practical work', 'individual work', 'project'])
     task_type_combobox.pack(pady = 5)
 
-    tk.Label(left_frame, text = "Deadline (YYYY-MM-DD)").pack(pady = 5)
+    tk.Label(left_frame, text = "Deadline (Day, Month, Year)").pack(pady = 5)
     deadline_entry = tk.Entry(left_frame)
     deadline_entry.pack(pady = 5)
 
     tk.Button(left_frame, text = "Add Task", command = on_add_task).pack(pady = 20)
 
-    tk.Button(left_frame, text = "Login and pull tasks from ELSE", command = on_pull_tasks).pack(pady = 20)
+    tk.Button(left_frame, text = "Authenticate and pull tasks from ELSE", command = on_pull_tasks).pack(pady = 20)
 
     tk.Button(left_frame, text = "Save the database to Dropbox", command = save_to_dropbox).pack(pady = 20)
 
