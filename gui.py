@@ -20,7 +20,7 @@ def on_add_task():
     course = course_entry.get()
     task_type = task_type_combobox.get()
     deadline = deadline_entry.get()
-    number = number_entry.get() if task_type == 'laboratory work' else None
+    number = number_entry.get() if task_type == 'laboratory work' or task_type == 'practical work' else None
     if course and task_type and deadline:
         add_task(course, task_type, deadline, number)
         load_tasks()
@@ -34,20 +34,29 @@ def load_tasks():
     course_tasks = {}
     for task in tasks:
         course = task[1]
+        task_type = task[2]
         if course not in course_tasks:
-            course_tasks[course] = []
-        course_tasks[course].append(task)
+            course_tasks[course] = {}
+        if task_type not in course_tasks[course]:
+            course_tasks[course][task_type] = []
+        course_tasks[course][task_type].append(task)
 
-    for course, tasks in course_tasks.items():
-        parent = tree.insert("", tk.END, text = course, open = True)
-        for task in tasks:
-            task_values = task[2:]
-            if task[2] == 'laboratory work':
-                task_text = f"Lab {task[3]}"
-                task_values = task[2:3] + task[4:]
-            else:
-                task_text = task[0]
-            tree.insert(parent, tk.END, values = task_values, text = task_text)
+    for course, task_types in course_tasks.items():
+        course_node = tree.insert("", tk.END, text = course, open = True)
+        for task_type in ['laboratory work', 'practical work', 'individual work']:  # Specify the desired order
+            if task_type in task_types:
+                tasks = task_types[task_type]
+                task_type_node = tree.insert(course_node, tk.END, text = task_type, open = True)
+                for task in tasks:
+                    if task_type == 'laboratory work':
+                        task_values = (f"Lab {task[3]}", task[4], task[5], task[6], task[7])
+                    elif task_type == 'practical work':
+                        task_values = (f"Practical {task[3]}", task[4], task[5], task[6], task[7])
+                    else:
+                        task_values = (task[2], task[4], task[5], task[6], task[7])  # Properly align the values
+                    tree.insert(task_type_node, tk.END, values = task_values)
+
+    root.update_idletasks()  # Force GUI update to adjust column widths
 
 
 def on_pull_tasks():
@@ -72,7 +81,8 @@ def download_from_dropbox():
 
 
 def on_task_type_change(event):
-    if task_type_combobox.get() == 'laboratory work':
+    task_type = task_type_combobox.get()
+    if task_type == 'laboratory work' or task_type == 'practical work':
         number_label.pack(pady = 5)
         number_entry.pack(pady = 5)
     else:
@@ -111,12 +121,11 @@ def create_gui():
     course_entry.pack(pady = 5)
 
     tk.Label(left_frame, text = "Task Type").pack(pady = 5)
-    task_type_combobox = ttk.Combobox(left_frame,
-                                      values = ['laboratory work', 'practical work', 'individual work', 'project'])
+    task_type_combobox = ttk.Combobox(left_frame, values = ['laboratory work', 'practical work', 'individual work'])
     task_type_combobox.pack(pady = 5)
     task_type_combobox.bind("<<ComboboxSelected>>", on_task_type_change)
 
-    number_label = tk.Label(left_frame, text = "Lab Number")
+    number_label = tk.Label(left_frame, text = "Number")
     number_entry = tk.Entry(left_frame)
 
     tk.Label(left_frame, text = "Deadline (YYYY-MM-DD)").pack(pady = 5)
@@ -129,7 +138,7 @@ def create_gui():
     tk.Button(left_frame, text = "Download the database from Dropbox", command = download_from_dropbox).pack(pady = 20)
 
     # Center frame for displaying tasks
-    columns = ("task_type", "stage1_status", "stage2_status", "stage3_status", "deadline")
+    columns = ("task", "stage1_status", "stage2_status", "stage3_status", "deadline")
     tree = ttk.Treeview(center_frame, columns = columns, show = 'tree headings')
     for col in columns:
         tree.heading(col, text = col)
