@@ -1,0 +1,1 @@
+Remove the api integration from 'gui.py' and move it to its actual file 'apy.py'
