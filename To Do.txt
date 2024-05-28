@@ -27,6 +27,13 @@ Make the 'course name' field as required?
 Add the database title at the top of the GUI.
 Move the database storage files to the 'private user data' folder.
 Rename the local database to 'local_user_database.db'
+Change | stage3_status TEXT DEFAULT 'not started', | in 'create_table()' to set the text to 'not presented'
+Add grade data for the tasks after the deadline.
+Implement the set default text in statuses when creating the database:
+Exmple:
+	stage1_status TEXT DEFAULT 'not started',
+    stage2_status TEXT DEFAULT 'not started',
+	stage3_status TEXT DEFAULT 'not started',
 
 	----API:
 Remove the api integration from 'gui.py' and move it to its actual file 'api.py'

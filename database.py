@@ -1,45 +1,62 @@
 import sqlite3
 
 def create_table():
-    conn = sqlite3.connect('tasks.db')
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS tasks (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    course TEXT,
-                    task_type TEXT,
-                    number TEXT,
-                    stage1_status TEXT DEFAULT 'not started',
-                    stage2_status TEXT DEFAULT 'not started',
-                    stage3_status TEXT DEFAULT 'not started',
-                    deadline TEXT
-                 )''')
-    conn.commit()
-    conn.close()
+    with sqlite3.connect("tasks.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS tasks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                course TEXT NOT NULL,
+                task_type TEXT NOT NULL,
+                number INTEGER,
+                performing_status TEXT,
+                writing_status TEXT,
+                presenting_status TEXT,
+                deadline TEXT
+            )
+        """)
+        conn.commit()
 
-def add_task(course, task_type, deadline, number=None):
-    conn = sqlite3.connect('tasks.db')
-    c = conn.cursor()
-    if task_type == 'laboratory work' or task_type == 'practical work':
-        c.execute('INSERT INTO tasks (course, task_type, number, deadline) VALUES (?, ?, ?, ?)',
-                  (course, task_type, number, deadline))
-    else:
-        c.execute('INSERT INTO tasks (course, task_type, deadline) VALUES (?, ?, ?)',
-                  (course, task_type, deadline))
-    conn.commit()
-    conn.close()
+def add_task(course, task_type, deadline, number):
+    with sqlite3.connect("tasks.db") as conn:
+        cursor = conn.cursor()
+        if task_type in ['laboratory work', 'practical work']:
+            cursor.execute("""
+                INSERT INTO tasks (course, task_type, number, deadline)
+                VALUES (?, ?, ?, ?)
+            """, (course, task_type, number, deadline))
+        else:
+            cursor.execute("""
+                INSERT INTO tasks (course, task_type, deadline)
+                VALUES (?, ?, ?)
+            """, (course, task_type, deadline))
+        conn.commit()
 
 def get_tasks():
-    conn = sqlite3.connect('tasks.db')
-    c = conn.cursor()
-    c.execute('SELECT * FROM tasks')
-    tasks = c.fetchall()
-    conn.close()
-    return tasks
+    with sqlite3.connect("tasks.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM tasks")
+        return cursor.fetchall()
 
-def update_task(task_id, task, performing_status, writing_status, presenting_status, deadline):
-    conn = sqlite3.connect('tasks.db')
-    c = conn.cursor()
-    c.execute('''UPDATE tasks SET task=?, stage1_status=?, stage2_status=?, stage3_status=?, deadline=? WHERE id=?''',
-              (task, performing_status, writing_status, presenting_status, deadline, task_id))
-    conn.commit()
-    conn.close()
+def get_task_by_id(task_id):
+    with sqlite3.connect("tasks.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM tasks WHERE id = ?", (task_id,))
+        return cursor.fetchone()
+
+def update_task(task_id, course, task_type, number, performing_status, writing_status, presenting_status, deadline):
+    with sqlite3.connect("tasks.db") as conn:
+        cursor = conn.cursor()
+        if task_type in ['laboratory work', 'practical work']:
+            cursor.execute("""
+                UPDATE tasks
+                SET course = ?, task_type = ?, number = ?, performing_status = ?, writing_status = ?, presenting_status = ?, deadline = ?
+                WHERE id = ?
+            """, (course, task_type, number, performing_status, writing_status, presenting_status, deadline, task_id))
+        else:
+            cursor.execute("""
+                UPDATE tasks
+                SET course = ?, task_type = ?, performing_status = ?, writing_status = ?, presenting_status = ?, deadline = ?
+                WHERE id = ?
+            """, (course, task_type, performing_status, writing_status, presenting_status, deadline, task_id))
+        conn.commit()
