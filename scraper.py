@@ -1,24 +1,23 @@
-import requests
-from bs4 import BeautifulSoup  # will replace with selenium
+import selenium
+from bs4 import BeautifulSoup  # will use for the easteregg
 from database import add_task
 
 
-def scrape_tasks():
-    url = "https://www.university-website.com/tasks"
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
-
-    tasks = []
-    for task in soup.find_all('div', class_ = 'task'):
-        course = task.find('span', class_ = 'course').text
-        task_type = task.find('span', class_ = 'task_type').text
-        deadline = task.find('span', class_ = 'deadline').text
-        tasks.append({'course': course, 'task_type': task_type, 'deadline': deadline})
-
-    return tasks
+def else_pre_auth():
+    print('ELSE pre auth scraper not implemented yet.')
 
 
-def import_tasks():
-    tasks = scrape_tasks()
-    for task in tasks:
-        add_task(task['course'], task['task_type'], task['deadline'])
+def else_post_auth():
+    print('ELSE post auth scraper not implemented yet.')
+
+
+def dropbox_pre_auth():
+    print('pre auth')
+
+
+def dropbox_post_auth():
+    print('post auth')
+
+
+def easteregg():
+    print('easteregg')

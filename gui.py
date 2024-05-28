@@ -1,19 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 from database import add_task, get_tasks, update_task, create_table, get_task_by_id, delete_task
-from scraper import import_tasks
-import dropbox
-import os
-
-
-def read_dropbox_token():
-    token_file_path = os.path.join('private user data', 'dropbox_api_token.txt')
-    with open(token_file_path, 'r') as file:
-        return file.read().strip()
-
-
-# Read the Dropbox API key from the file
-DROPBOX_ACCESS_TOKEN = read_dropbox_token()
+from api import save_to_dropbox, download_from_dropbox
+from scraper import else_pre_auth, else_post_auth
 
 
 def on_add_task():
@@ -68,31 +57,15 @@ def load_tasks():
 
 
 def on_pull_tasks():
-    import_tasks()
-    load_tasks()
-
-
-def save_to_dropbox():
-    dbx = dropbox.Dropbox(DROPBOX_ACCESS_TOKEN)
-    with open('tasks.db', 'rb') as f:
-        dbx.files_upload(f.read(), '/tasks.db', mode=dropbox.files.WriteMode.overwrite)
-    print("Database saved to Dropbox")
-
-
-def download_from_dropbox():
-    dbx = dropbox.Dropbox(DROPBOX_ACCESS_TOKEN)
-    with open('tasks.db', 'wb') as f:
-        metadata, res = dbx.files_download(path='/tasks.db')
-        f.write(res.content)
-    print("Database downloaded from Dropbox")
+    else_pre_auth()
     load_tasks()
 
 
 def on_task_type_change(event):
     task_type = task_type_combobox.get()
     if task_type == 'laboratory work' or task_type == 'practical work':
-        number_label.pack(pady=5)
-        number_entry.pack(pady=5)
+        number_label.pack(pady = 5, before = deadline_label)
+        number_entry.pack(pady = 5, before = deadline_label)
     else:
         number_label.pack_forget()
         number_entry.pack_forget()
@@ -157,7 +130,6 @@ def on_apply_changes():
                 print('can\'t apply data')
 
 
-
 def on_discard_changes():
     task_id.set("")
     task_entry.delete(0, tk.END)
@@ -179,7 +151,7 @@ def on_delete_task():
 
 
 def create_vertical_left_bar(left_frame):
-    global course_entry, task_type_combobox, deadline_entry, number_label, number_entry
+    global course_entry, task_type_combobox, deadline_label, deadline_entry, number_label, number_entry
 
     tk.Label(left_frame, text="Course").pack(pady=5)
     course_entry = tk.Entry(left_frame)
@@ -193,12 +165,13 @@ def create_vertical_left_bar(left_frame):
     number_label = tk.Label(left_frame, text="Number")
     number_entry = tk.Entry(left_frame)
 
-    tk.Label(left_frame, text="Deadline").pack(pady=5)
+    deadline_label = tk.Label(left_frame, text = "Deadline")
+    deadline_label.pack(pady = 5)
     deadline_entry = tk.Entry(left_frame)
     deadline_entry.pack(pady=5)
 
     tk.Button(left_frame, text="Add Task", command=on_add_task).pack(pady=20)
-    tk.Button(left_frame, text="Login and pull tasks from ELSE", command=on_pull_tasks).pack(pady=20)
+    tk.Button(left_frame, text="Authenticate and pull tasks from ELSE", command=on_pull_tasks).pack(pady=20)
     tk.Button(left_frame, text="Save the database to Dropbox", command=save_to_dropbox).pack(pady=20)
     tk.Button(left_frame, text="Download the database from Dropbox", command=download_from_dropbox).pack(pady=20)
 

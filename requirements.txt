@@ -1,7 +1,5 @@
-# sqlite3
-# tkinter
-# Not preinstalled:
-Flask
-requests
+# Flask # no longer used
+# requests # no longer used
+bs4
 selenium
 dropbox

@@ -1,5 +1,6 @@
 import sqlite3
 
+
 def create_table():
     with sqlite3.connect("tasks.db") as conn:
         cursor = conn.cursor()
@@ -17,6 +18,7 @@ def create_table():
         """)
         conn.commit()
 
+
 def add_task(course, task_type, deadline, number):
     with sqlite3.connect("tasks.db") as conn:
         cursor = conn.cursor()
@@ -32,17 +34,20 @@ def add_task(course, task_type, deadline, number):
             """, (course, task_type, deadline))
         conn.commit()
 
+
 def get_tasks():
     with sqlite3.connect("tasks.db") as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM tasks")
         return cursor.fetchall()
 
+
 def get_task_by_id(task_id):
     with sqlite3.connect("tasks.db") as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM tasks WHERE id = ?", (task_id,))
         return cursor.fetchone()
+
 
 def update_task(task_id, course, task_type, number, performing_status, writing_status, presenting_status, deadline):
     with sqlite3.connect("tasks.db") as conn:
@@ -60,6 +65,7 @@ def update_task(task_id, course, task_type, number, performing_status, writing_s
                 WHERE id = ?
             """, (course, task_type, performing_status, writing_status, presenting_status, deadline, task_id))
         conn.commit()
+
 
 def delete_task(task_id):
     with sqlite3.connect("tasks.db") as conn:
