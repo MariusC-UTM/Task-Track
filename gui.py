@@ -97,36 +97,11 @@ def on_task_type_change(event):
         number_label.pack_forget()
         number_entry.pack_forget()
 
-# Using the database function to pull the data of a task.
-# def on_tree_select(event):
-#     selected_item = tree.selection()
-#     if selected_item:
-#         item_tags = tree.item(selected_item, 'tags')  # Extract the tags of the selected item
-#         if 'course' in item_tags:
-#             task_id_val = tree.item(selected_item, 'text')
-#             print('course', task_id_val)
-#         elif 'task_type' in item_tags:
-#             task_id_val = tree.item(selected_item, 'text')
-#             print('task_type', task_id_val)
-#         elif 'task' in item_tags:
-#             task_id_val = tree.item(selected_item, 'values')[0]
-#             task = get_task_by_id(task_id_val)
-#             if task:
-#                 task_values = (task[2], task[4], task[5], task[6], task[7])
-#                 task_id.set(task_id_val)
-#                 task_entry.delete(0, tk.END)
-#                 task_entry.insert(0, task_values[0])
-#                 performing_status_combobox.set(task_values[1])
-#                 writing_status_combobox.set(task_values[2])
-#                 presenting_status_combobox.set(task_values[3])
-#                 edit_deadline_entry.delete(0, tk.END)
-#                 edit_deadline_entry.insert(0, task_values[4])
-
 
 def on_tree_select(event):
     selected_item = tree.selection()
     if selected_item:
-        item_tags = tree.item(selected_item, 'tags')  # Extract the tags of the selected item
+        item_tags = tree.item(selected_item, 'tags')
         if 'course' in item_tags:
             task_id_val = tree.item(selected_item, 'text')
             print('course:', task_id_val)
@@ -138,13 +113,15 @@ def on_tree_select(event):
             if task_values:
                 task_id.set(tree.item(selected_item)['text'])  # The ID of the task
                 print('task id:', task_id.get())
-                task_entry.delete(0, tk.END)  # Clear previous text
-                task_entry.insert(0, task_values[0])  # Insert new text
+                course_name.set(tree.item(tree.parent(tree.parent(selected_item)))['text'])
+                task_type.set(tree.item(tree.parent(selected_item))['text'])
+                task_entry.delete(0, tk.END)
+                task_entry.insert(0, task_values[0])
                 performing_status_combobox.set(task_values[1])
                 writing_status_combobox.set(task_values[2])
                 presenting_status_combobox.set(task_values[3])
                 edit_deadline_entry.delete(0, tk.END)
-                edit_deadline_entry.insert(0, task_values[4])  # Insert deadline text
+                edit_deadline_entry.insert(0, task_values[4])
 
 
 def on_apply_changes():
@@ -210,33 +187,46 @@ def create_vertical_left_bar(left_frame):
     tk.Button(left_frame, text="Save the database to Dropbox", command=save_to_dropbox).pack(pady=20)
     tk.Button(left_frame, text="Download the database from Dropbox", command=download_from_dropbox).pack(pady=20)
 
+
 def create_horizontal_bottom_bar(edit_frame):
-    global task_entry, performing_status_combobox, writing_status_combobox, presenting_status_combobox, edit_deadline_entry, task_id
+    global task_entry, performing_status_combobox, writing_status_combobox, presenting_status_combobox, edit_deadline_entry, task_id, course_name, task_type
 
-    tk.Label(edit_frame, text="Task").grid(row=0, column=0, padx=5, pady=5)
+    course_name = tk.StringVar()
+    task_type = tk.StringVar()
+    task_id = tk.StringVar()
+
+    tk.Label(edit_frame, text="Course:").grid(row=0, column=0, padx=5, pady=5, sticky='w')
+    tk.Label(edit_frame, textvariable=course_name).grid(row=0, column=1, padx=5, pady=5, sticky='w')
+
+    tk.Label(edit_frame, text="Task Type:").grid(row=1, column=0, padx=5, pady=5, sticky='w')
+    tk.Label(edit_frame, textvariable=task_type).grid(row=1, column=1, padx=5, pady=5, sticky='w')
+
+    tk.Label(edit_frame, text="Task ID:").grid(row=2, column=0, padx=5, pady=5, sticky='w')
+    tk.Label(edit_frame, textvariable=task_id).grid(row=2, column=1, padx=5, pady=5, sticky='w')
+
+    tk.Label(edit_frame, text="Task").grid(row=0, column=3, padx=5, pady=5)
     task_entry = tk.Entry(edit_frame)
-    task_entry.grid(row=0, column=1, padx=5, pady=5)
+    task_entry.grid(row=0, column=4, padx=5, pady=5)
 
-    tk.Label(edit_frame, text="Performing the Task").grid(row=0, column=2, padx=5, pady=5)
+    tk.Label(edit_frame, text="Performing the Task").grid(row=0, column=5, padx=5, pady=5)
     performing_status_combobox = ttk.Combobox(edit_frame, values=['not started', 'unfinished', 'finished'])
-    performing_status_combobox.grid(row=0, column=3, padx=5, pady=5)
+    performing_status_combobox.grid(row=0, column=6, padx=5, pady=5)
 
-    tk.Label(edit_frame, text="Writing the Report").grid(row=0, column=4, padx=5, pady=5)
+    tk.Label(edit_frame, text="Writing the Report").grid(row=1, column=3, padx=5, pady=5)
     writing_status_combobox = ttk.Combobox(edit_frame, values=['not started', 'unfinished', 'finished'])
-    writing_status_combobox.grid(row=0, column=5, padx=5, pady=5)
+    writing_status_combobox.grid(row=1, column=4, padx=5, pady=5)
 
-    tk.Label(edit_frame, text="Presenting the Report").grid(row=1, column=0, padx=5, pady=5)
+    tk.Label(edit_frame, text="Presenting the Report").grid(row=1, column=5, padx=5, pady=5)
     presenting_status_combobox = ttk.Combobox(edit_frame, values=['not presented', 'presented'])
-    presenting_status_combobox.grid(row=1, column=1, padx=5, pady=5)
+    presenting_status_combobox.grid(row=1, column=6, padx=5, pady=5)
 
-    tk.Label(edit_frame, text="Deadline").grid(row=1, column=2, padx=5, pady=5)
+    tk.Label(edit_frame, text="Deadline").grid(row=2, column=3, padx=5, pady=5)
     edit_deadline_entry = tk.Entry(edit_frame)
-    edit_deadline_entry.grid(row=1, column=3, padx=5, pady=5)
+    edit_deadline_entry.grid(row=2, column=4, padx=5, pady=5)
 
-    tk.Button(edit_frame, text="Apply Changes", command=on_apply_changes).grid(row=1, column=6, padx=5, pady=5)
+    tk.Button(edit_frame, text="Apply Changes", command=on_apply_changes).grid(row=0, column=7, padx=5, pady=5)
     tk.Button(edit_frame, text="Discard Changes", command=on_discard_changes).grid(row=1, column=7, padx=5, pady=5)
 
-    task_id = tk.StringVar()  # Hidden field for task ID
 
 def create_central_box(center_frame):
     global tree
@@ -256,10 +246,11 @@ def create_central_box(center_frame):
 
     tree.bind("<<TreeviewSelect>>", on_tree_select)
 
+
 def create_gui():
     root = tk.Tk()
     root.title("University Task Manager")
-    root.geometry("800x600")
+    root.geometry("1050x600")
     root.resizable(True, True)
 
     root.grid_columnconfigure(0, weight=0)
@@ -287,6 +278,7 @@ def create_gui():
 
     load_tasks()
     root.mainloop()
+
 
 if __name__ == "__main__":
     create_table()  # Ensure the table is created

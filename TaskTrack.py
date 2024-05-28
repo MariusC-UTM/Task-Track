@@ -7,7 +7,6 @@ from database import create_table
 
 def main():
     create_table()
-    # import_tasks()  # Optional: Import tasks at the start
     create_gui()
 
 if __name__ == "__main__":
