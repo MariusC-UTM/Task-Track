@@ -49,14 +49,12 @@ def load_tasks():
                 task_type_node = tree.insert(course_node, tk.END, text = task_type, open = True)
                 for task in tasks:
                     if task_type == 'laboratory work':
-                        task_values = (f"Lab {task[3]}", task[4], task[5], task[6], task[7])
+                        task_values = (f"Laboratory {task[3]}", task[4], task[5], task[6], task[7])
                     elif task_type == 'practical work':
                         task_values = (f"Practical {task[3]}", task[4], task[5], task[6], task[7])
                     else:
                         task_values = (task[2], task[4], task[5], task[6], task[7])  # Properly align the values
                     tree.insert(task_type_node, tk.END, values = task_values)
-
-    root.update_idletasks()  # Force GUI update to adjust column widths
 
 
 def on_pull_tasks():

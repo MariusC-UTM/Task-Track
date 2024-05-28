@@ -1,1 +1,2 @@
+Fix the GUI bug with incorrect field sizes on startup
 Remove the api integration from 'gui.py' and move it to its actual file 'apy.py'
