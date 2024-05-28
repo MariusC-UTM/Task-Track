@@ -1,2 +1,53 @@
+	Bugs and Fixes:
+	----Bugs:
 Fix the GUI bug with incorrect field sizes on startup
-Remove the api integration from 'gui.py' and move it to its actual file 'apy.py'
+
+	To Do list and Ideas:
+	----GUI:
+New buttons:
+-Show local database
+-Show Dropbox database (database_dropbox.db)
+-Show scraped database (else_database.db)
+
+When showing the local database give the option to save to Dropbox and to clear/delete the database.
+
+When showing from Dropbox, create a new database and give the option to replace the local database.
+
+When scraping, save the data in its own database and give the option to combine the database with the local one or replace the local one.
+
+New section:
+A vertical bar at the bottom of the central box that is used to modify the task and its data. The modified task is based on which task is selected in the central box.
+Remove editing the id of the task.
+
+Rearrange elements around in the GUI to make it look better.
+
+	----Database:
+Make the 'deadline' field as optional.
+Make the 'course name' field as required?
+Add the database title at the top of the GUI.
+Move the database storage files to the 'private user data' folder.
+Rename the local database to 'local_user_database.db'
+
+	----API:
+Remove the api integration from 'gui.py' and move it to its actual file 'api.py'
+
+	----Scraper:
+ELSE:
+else_pre_auth()
+(Use the program to advance after the auth stage)
+else_post_auth()
+
+The scraper prompts the user to authenticate, then a button is displayed in the GUI to continue scraping after the authentication.
+
+Dropbox:
+dropbox_pre_auth()
+(Use the program to advance after the auth stage)
+dropbox_post_auth()
+
+The scraper prompts the user to authenticate, then a button is displayed in the GUI to continue scraping after the authentication.
+
+Easteregg:
+Use beatifulsoup
+
+	----Easteregg:
+Typing 'special thanks' in the course field will display scraped data (using beatifulsoup) of the sigmoid team from the sigmoid ai website.
