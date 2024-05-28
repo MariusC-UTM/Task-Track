@@ -35,3 +35,11 @@ def get_tasks():
     tasks = c.fetchall()
     conn.close()
     return tasks
+
+def update_task(task_id, task, performing_status, writing_status, presenting_status, deadline):
+    conn = sqlite3.connect('tasks.db')
+    c = conn.cursor()
+    c.execute('''UPDATE tasks SET task=?, stage1_status=?, stage2_status=?, stage3_status=?, deadline=? WHERE id=?''',
+              (task, performing_status, writing_status, presenting_status, deadline, task_id))
+    conn.commit()
+    conn.close()
