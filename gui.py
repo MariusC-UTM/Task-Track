@@ -110,6 +110,7 @@ def on_tree_select(event):
             edit_deadline_entry.delete(0, tk.END)
             edit_deadline_entry.insert(0, task_values[4])  # Insert deadline text
 
+
 def on_apply_changes():
     task_id_val = task_id.get()
     task_val = task_entry.get()
@@ -122,42 +123,22 @@ def on_apply_changes():
         update_task(task_id_val, task_val, performing_status, writing_status, presenting_status, deadline_val)
         load_tasks()
 
+
 def on_discard_changes():
     task_id.set("")
-    task_entry.set("")
+    task_entry.delete(0, tk.END)
     performing_status_combobox.set("")
     writing_status_combobox.set("")
     presenting_status_combobox.set("")
-    edit_deadline_entry.set("")
+    edit_deadline_entry.delete(0, tk.END)
 
 
-def create_gui():
-    root = tk.Tk()
-    root.title("University Task Manager")
-    root.geometry("800x600")
-    root.resizable(True, True)
+def create_vertical_left_bar(parent):
+    global course_entry, task_type_combobox, deadline_entry, number_label, number_entry
 
-    root.grid_columnconfigure(0, weight = 0)
-    root.grid_columnconfigure(1, weight = 1)
-    root.grid_rowconfigure(0, weight = 1)
-    root.grid_rowconfigure(1, weight = 0)
-
-    left_frame = tk.Frame(root, width = 200, bg = 'lightgrey')
-    center_frame = tk.Frame(root)
-    edit_frame = tk.Frame(root, height = 100, bg = 'lightgrey')
-
-    left_frame.grid(row = 0, column = 0, rowspan = 2, sticky = "ns")
-    center_frame.grid(row = 0, column = 1, sticky = "nsew")
-    edit_frame.grid(row = 1, column = 1, sticky = "ew")
-
+    left_frame = tk.Frame(parent, width=200, bg='lightgrey')
+    left_frame.grid(row=0, column=0, rowspan=2, sticky="ns")
     left_frame.grid_propagate(False)
-    edit_frame.grid_propagate(False)
-
-    center_frame.grid_rowconfigure(0, weight = 1)
-    center_frame.grid_columnconfigure(0, weight = 1)
-
-    global course_entry, task_type_combobox, deadline_entry, number_label, number_entry, tree
-    global task_id, task_entry, performing_status_combobox, writing_status_combobox, presenting_status_combobox, edit_deadline_entry
 
     tk.Label(left_frame, text="Course").pack(pady=5)
     course_entry = tk.Entry(left_frame)
@@ -180,7 +161,17 @@ def create_gui():
     tk.Button(left_frame, text="Save the database to Dropbox", command=save_to_dropbox).pack(pady=20)
     tk.Button(left_frame, text="Download the database from Dropbox", command=download_from_dropbox).pack(pady=20)
 
-    # Center frame for displaying tasks
+    return left_frame
+
+
+def create_central_box(parent):
+    global tree
+
+    center_frame = tk.Frame(parent)
+    center_frame.grid(row=0, column=1, sticky="nsew")
+    center_frame.grid_rowconfigure(0, weight=1)
+    center_frame.grid_columnconfigure(0, weight=1)
+
     columns = ("task", "performing", "writing report", "presenting report", "deadline")
     tree = ttk.Treeview(center_frame, columns=columns, show='tree headings')
     tree.heading("task", text="Task")
@@ -190,28 +181,64 @@ def create_gui():
     tree.heading("deadline", text="Deadline")
     tree.grid(row=0, column=0, sticky="nsew")
 
-    # Add a scrollbar to the Treeview
     scrollbar = ttk.Scrollbar(center_frame, orient=tk.VERTICAL, command=tree.yview)
     tree.configure(yscroll=scrollbar.set)
     scrollbar.grid(row=0, column=1, sticky='ns')
 
-    task_id = tk.StringVar()
-    task_entry = tk.Entry(edit_frame)
-    performing_status_combobox = ttk.Combobox(edit_frame, values = ['not started', 'unfinished', 'finished'])
-    writing_status_combobox = ttk.Combobox(edit_frame, values = ['not started', 'unfinished', 'finished'])
-    presenting_status_combobox = ttk.Combobox(edit_frame, values = ['not presented', 'presented'])
-    edit_deadline_entry = tk.Entry(edit_frame)
-
     tree.bind("<<TreeviewSelect>>", on_tree_select)
 
-    tk.Label(edit_frame, text = "Task").grid(row = 0, column = 0, padx = 5, pady = 5)
+    return center_frame
+
+
+def create_horizontal_bottom_bar(parent):
+    global task_id, task_entry, performing_status_combobox, writing_status_combobox, presenting_status_combobox, edit_deadline_entry
+
+    edit_frame = tk.Frame(parent, height=100, bg='lightgrey')
+    edit_frame.grid(row=1, column=1, sticky="ew")
+    edit_frame.grid_propagate(False)
+
+    task_id = tk.StringVar()
     task_entry = tk.Entry(edit_frame)
-    task_entry.grid(row = 0, column = 1, padx = 5, pady = 5)
+    performing_status_combobox = ttk.Combobox(edit_frame, values=['not started', 'unfinished', 'finished'])
+    writing_status_combobox = ttk.Combobox(edit_frame, values=['not started', 'unfinished', 'finished'])
+    presenting_status_combobox = ttk.Combobox(edit_frame, values=['not presented', 'presented'])
+    edit_deadline_entry = tk.Entry(edit_frame)
 
-    # Add labels and entry widgets for other task details (performing, writing report, presenting report, deadline)
+    tk.Label(edit_frame, text="Task").grid(row=0, column=0, padx=5, pady=5)
+    task_entry.grid(row=0, column=1, padx=5, pady=5)
 
-    tk.Button(edit_frame, text = "Apply Changes", command = on_apply_changes).grid(row = 0, column = 6, padx = 5, pady = 5)
-    tk.Button(edit_frame, text = "Discard Changes", command = on_discard_changes).grid(row = 1, column = 6, padx = 5, pady = 5)
+    tk.Label(edit_frame, text="Performing the Task").grid(row=0, column=2, padx=5, pady=5)
+    performing_status_combobox.grid(row=0, column=3, padx=5, pady=5)
+
+    tk.Label(edit_frame, text="Writing the Report").grid(row=0, column=4, padx=5, pady=5)
+    writing_status_combobox.grid(row=0, column=5, padx=5, pady=5)
+
+    tk.Label(edit_frame, text="Presenting the Report").grid(row=1, column=0, padx=5, pady=5)
+    presenting_status_combobox.grid(row=1, column=1, padx=5, pady=5)
+
+    tk.Label(edit_frame, text="Deadline").grid(row=1, column=2, padx=5, pady=5)
+    edit_deadline_entry.grid(row=1, column=3, padx=5, pady=5)
+
+    tk.Button(edit_frame, text="Apply Changes", command=on_apply_changes).grid(row=0, column=6, padx=5, pady=5)
+    tk.Button(edit_frame, text="Discard Changes", command=on_discard_changes).grid(row=1, column=6, padx=5, pady=5)
+
+    return edit_frame
+
+
+def create_gui():
+    root = tk.Tk()
+    root.title("University Task Manager")
+    root.geometry("800x600")
+    root.resizable(True, True)
+
+    root.grid_columnconfigure(0, weight=0)
+    root.grid_columnconfigure(1, weight=1)
+    root.grid_rowconfigure(0, weight=1)
+    root.grid_rowconfigure(1, weight=0)
+
+    create_vertical_left_bar(root)
+    create_central_box(root)
+    create_horizontal_bottom_bar(root)
 
     load_tasks()
     root.mainloop()
