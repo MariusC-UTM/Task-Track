@@ -60,3 +60,9 @@ def update_task(task_id, course, task_type, number, performing_status, writing_s
                 WHERE id = ?
             """, (course, task_type, performing_status, writing_status, presenting_status, deadline, task_id))
         conn.commit()
+
+def delete_task(task_id):
+    with sqlite3.connect("tasks.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
+        conn.commit()

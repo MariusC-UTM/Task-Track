@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from database import add_task, get_tasks, update_task, create_table, get_task_by_id
+from database import add_task, get_tasks, update_task, create_table, get_task_by_id, delete_task
 from scraper import import_tasks
 import dropbox
 import os
@@ -129,29 +129,33 @@ def on_apply_changes():
     selected_item = tree.selection()
     if selected_item:
         item_tags = tree.item(selected_item, 'tags')
-        if 'course' in item_tags:
+        if 'task' in item_tags:
             task_id_val = tree.item(selected_item, 'text')
-            print('course:', task_id_val)
-        elif 'task_type' in item_tags:
-            task_id_val = tree.item(selected_item, 'text')
-            print('task_type:', task_id_val)
-        elif 'task' in item_tags:
-            task_id_val = tree.item(selected_item, 'text')
-            # or
-            # task_id_val = task_id.get()
-            # print('task id:', task_id_val)
-            task_val = task_entry.get()
+            task_type_val = tree.item(tree.parent(selected_item))['text']
+            course_val = tree.item(tree.parent(tree.parent(selected_item)))['text']
+
+            task_number = None
+            if task_type_val in ['laboratory work', 'practical work']:
+                # Extract the numeric part from the task_number string
+                task_number_str = task_entry.get().split()[1] if task_entry.get().strip() else None
+                if task_number_str:
+                    try:
+                        task_number = int(task_number_str)
+                    except ValueError:
+                        print("Invalid task number format. Please enter a valid number.")
+
             performing_status = performing_status_combobox.get()
             writing_status = writing_status_combobox.get()
             presenting_status = presenting_status_combobox.get()
             deadline_val = edit_deadline_entry.get()
 
-            print('applying data: ', task_id_val, task_val, performing_status, writing_status, presenting_status, deadline_val)
+            print('applying data: ', task_id_val, course_val, task_type_val, task_number, performing_status, writing_status, presenting_status, deadline_val)
             if task_id_val:
-                update_task(task_id_val, task_val, performing_status, writing_status, presenting_status, deadline_val)
+                update_task(task_id_val, course_val, task_type_val, task_number, performing_status, writing_status, presenting_status, deadline_val)
                 load_tasks()
             else:
                 print('can\'t apply data')
+
 
 
 def on_discard_changes():
@@ -161,6 +165,17 @@ def on_discard_changes():
     writing_status_combobox.set("")
     presenting_status_combobox.set("")
     edit_deadline_entry.delete(0, tk.END)
+
+
+def on_delete_task():
+    selected_item = tree.selection()
+    if selected_item:
+        item_tags = tree.item(selected_item, 'tags')
+        if 'task' in item_tags:
+            task_id_val = tree.item(selected_item, 'text')
+            delete_task(task_id_val)  # Call the function to delete the task from the database
+            load_tasks()  # Reload tasks to update the tree view
+            on_discard_changes()  # Clear the fields
 
 
 def create_vertical_left_bar(left_frame):
@@ -178,7 +193,7 @@ def create_vertical_left_bar(left_frame):
     number_label = tk.Label(left_frame, text="Number")
     number_entry = tk.Entry(left_frame)
 
-    tk.Label(left_frame, text="Deadline (YYYY-MM-DD)").pack(pady=5)
+    tk.Label(left_frame, text="Deadline").pack(pady=5)
     deadline_entry = tk.Entry(left_frame)
     deadline_entry.pack(pady=5)
 
@@ -226,6 +241,7 @@ def create_horizontal_bottom_bar(edit_frame):
 
     tk.Button(edit_frame, text="Apply Changes", command=on_apply_changes).grid(row=0, column=7, padx=5, pady=5)
     tk.Button(edit_frame, text="Discard Changes", command=on_discard_changes).grid(row=1, column=7, padx=5, pady=5)
+    tk.Button(edit_frame, text="Delete Task", command=on_delete_task).grid(row=2, column=7, padx=5, pady=5)  # Add the new button
 
 
 def create_central_box(center_frame):
