@@ -12,7 +12,7 @@ def else_post_auth():
 
 
 def dropbox_pre_auth():
-    print('pre auth')
+    print('Dropbox pre auth')
 
 
 def dropbox_post_auth():

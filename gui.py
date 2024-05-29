@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from database import add_task, get_tasks, update_task, create_table, delete_task, get_task_by_id
-from api import save_to_dropbox, download_from_dropbox
+from api import upload_to_dropbox, download_from_dropbox
 from scraper import else_pre_auth, else_post_auth
 
 
@@ -12,13 +12,12 @@ def on_add_task():
     if task_type == 'laboratory work' or task_type == 'practical work':
         number = number_entry.get()
         if course and task_type and number and deadline:
-            add_task(course, task_type, deadline, number)
-            load_tasks()
+            add_task(course, task_type, number, deadline)
     else:
         number = None
         if course and task_type and deadline:
-            add_task(course, task_type, deadline, number)
-            load_tasks()
+            add_task(course, task_type, number, deadline)
+    load_tasks()
 
 
 def load_tasks():
@@ -183,12 +182,12 @@ def create_vertical_left_bar(left_frame):
     deadline_entry = tk.Entry(left_frame)
     deadline_entry.pack(pady=5)
 
-    tk.Button(left_frame, text = "Add Task", command=on_add_task).pack(pady=20)
+    tk.Button(left_frame, text = "Add Task", command = on_add_task).pack(pady=20)
     tk.Button(left_frame, text = "Pre-authentication on ELSE\nAuthenticate on ELSE", command=on_else_auth).pack(pady=10)
     tk.Button(left_frame, text = "Post-authentication on ELSE\nCollect tasks from ELSE", command = on_else_collect).pack(pady = 10)
-    tk.Button(left_frame, text = "Save the database to Dropbox", command=save_to_dropbox).pack(pady=10)
-    tk.Button(left_frame, text = "Download the database from Dropbox", command=download_from_dropbox).pack(pady=10)
-    tk.Button(left_frame, text = "Post-authentication on Dropbox\nGrab the API token", command=download_from_dropbox).pack(pady=10)
+    tk.Button(left_frame, text = "Upload the database to Dropbox", command = upload_to_dropbox).pack(pady=10)
+    tk.Button(left_frame, text = "Download the database from Dropbox", command = download_from_dropbox).pack(pady=10)
+    tk.Button(left_frame, text = "Post-authentication on Dropbox\nGrab the API token", command = download_from_dropbox).pack(pady=10)
 
 
 def create_horizontal_bottom_bar(edit_frame):

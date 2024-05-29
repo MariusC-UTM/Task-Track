@@ -23,7 +23,7 @@ def create_table():
         conn.commit()
 
 
-def add_task(course, task_type, deadline, number):
+def add_task(course, task_type, number, deadline):
     with sqlite3.connect("tasks.db") as conn:
         cursor = conn.cursor()
         if task_type in ['laboratory work', 'practical work']:

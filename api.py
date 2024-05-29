@@ -1,6 +1,41 @@
 import dropbox
 import os
+import time
 from scraper import dropbox_pre_auth, dropbox_post_auth
+
+
+def dropbox_token_status():
+    token_file_path = os.path.join('user data', 'private', 'dropbox_api_token.txt')
+
+    # Step 1: Check if the Dropbox token file exists
+    if os.path.exists(token_file_path):
+        try:
+            # Step 2: Get the existing token from the file
+            DROPBOX_ACCESS_TOKEN = read_dropbox_token()
+
+            # Check if the token is valid
+            dbx = dropbox.Dropbox(DROPBOX_ACCESS_TOKEN)
+            dbx.users_get_current_account()
+
+            # If no AuthError is raised, return success
+            return True
+
+        except dropbox.exceptions.AuthError:
+            # If AuthError is raised, go to step 3
+            pass
+    else:
+        # If the token file does not exist, ensure the directory is created
+        os.makedirs(os.path.dirname(token_file_path), exist_ok=True)
+
+    # Step 3: Perform authentication
+    dropbox_pre_auth()
+    new_token = dropbox_post_auth()
+
+    # Step 4: Write the new token to the 'dropbox_api_token.txt' file
+    with open(token_file_path, 'w') as file:
+        file.write(new_token.strip())
+
+    return True
 
 
 def read_dropbox_token():
@@ -9,35 +44,7 @@ def read_dropbox_token():
         return file.read().strip()
 
 
-def dropbox_token_status():  # Not implemented yet
-    # 1:
-    # check if the dropbox token file 'dropbox_api_token.txt' exists in the 'user data\private' folder
-
-    # 1.1:
-    # if yes then check if the token is valid by going to step # 2
-    # i.2:
-    # if not then create the folder and the file, go to step # 3
-
-    # 2:
-    DROPBOX_ACCESS_TOKEN = read_dropbox_token()
-    # check for AuthError
-    dbx = dropbox.Dropbox(DROPBOX_ACCESS_TOKEN)  # ?
-    # 2.1:
-    # if no AuthError return succes ?
-    # 2.2:
-    # else auth and scrap by going to step # 3 ?
-
-    # 3:
-    dropbox_pre_auth()
-    # ?
-    dropbox_post_auth()
-    # ?
-
-    # 4:
-    # write the token to the 'dropbox_api_token.txt' file
-
-
-def save_to_dropbox():  # Not finished
+def upload_to_dropbox():  # Not finished
     if dropbox_token_status() == 'fail':  # ?
         print('You must manually authenticate and let the program grab your token.')
         return
@@ -46,7 +53,7 @@ def save_to_dropbox():  # Not finished
     dbx = dropbox.Dropbox(DROPBOX_ACCESS_TOKEN)
     with open('tasks.db', 'rb') as f:
         dbx.files_upload(f.read(), '/tasks.db', mode=dropbox.files.WriteMode.overwrite)
-    print("Database saved to Dropbox")
+    print("Database uploaded to Dropbox")
 
 
 def download_from_dropbox():  # Not finished
