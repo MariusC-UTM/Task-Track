@@ -16,7 +16,7 @@ def dropbox_pre_auth():
 
 
 def dropbox_post_auth():
-    print('post auth')
+    print('Dropbox post auth')
 
 
 def easteregg():

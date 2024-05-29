@@ -4,25 +4,24 @@ Fix the GUI bug with incorrect field sizes on startup
 
 	To Do list and Ideas:
 	----GUI:
-New buttons:
--Show local database
--Show Dropbox database (database_dropbox.db)
--Show scraped database (else_database.db)
+- New section:
+    - top horizontal bar
+    New buttons:
+        - Show Local database (tasks_local.db)
+        - Show Dropbox database (tasks_dropbox.db)
+        - Show Else database (tasks_else.db)
+When showing the local database give the option to save to Dropbox and to clear/delete the database. ?
+When showing from Dropbox, create a new database and give the option to replace the local database. ?
+When scraping, save the data in its own database and give the option to combine the database with the local one or replace the local one. ?
 
-When showing the local database give the option to save to Dropbox and to clear/delete the database.
+- New section:
+    - DONE: A vertical bar at the bottom of the central box that is used to modify the task and its data. The modified task is based on which task is selected in the central box.
+    - DONE: Remove editing the id of the task.
 
-When showing from Dropbox, create a new database and give the option to replace the local database.
-
-When scraping, save the data in its own database and give the option to combine the database with the local one or replace the local one.
-
-New section:
-A vertical bar at the bottom of the central box that is used to modify the task and its data. The modified task is based on which task is selected in the central box.
-Remove editing the id of the task.
-
-Rearrange elements around in the GUI to make it look better.
+DONE: Rearrange elements around in the GUI to make it look better.
 
 	----Database:
-Make the 'deadline' field as optional.
+Make the 'deadline' field as optional?
 Make the 'course name' field as required?
 Add the database title at the top of the GUI.
 Move the database storage files to the 'private user data' folder.
@@ -36,9 +35,13 @@ Exmple:
 	stage3_status TEXT DEFAULT 'not started',
 
 	----API:
-Remove the api integration from 'gui.py' and move it to its actual file 'api.py'
+Done:
+    - Remove the api integration from 'gui.py' and move it to its actual file 'api.py'
 
 	----Scraper:
+Idea:
+    - Add handlers in the scrapers to automatically detect when the user finished authenticating.
+
 ELSE:
 else_pre_auth()
 (Use the program to advance after the auth stage)

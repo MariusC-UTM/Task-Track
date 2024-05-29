@@ -1,6 +1,10 @@
 import sqlite3
 
 
+# Implement the functionality to select the database to operate on:
+# tasks_local.db, tasks_dropbox.db, tasks_else.db
+
+
 def create_table():
     with sqlite3.connect("tasks.db") as conn:
         cursor = conn.cursor()

@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from database import add_task, get_tasks, update_task, create_table, get_task_by_id, delete_task
+from database import add_task, get_tasks, update_task, create_table, delete_task, get_task_by_id
 from api import save_to_dropbox, download_from_dropbox
 from scraper import else_pre_auth, else_post_auth
 
@@ -9,10 +9,16 @@ def on_add_task():
     course = course_entry.get()
     task_type = task_type_combobox.get()
     deadline = deadline_entry.get()
-    number = number_entry.get() if task_type == 'laboratory work' or task_type == 'practical work' else None
-    if course and task_type and deadline:
-        add_task(course, task_type, deadline, number)
-        load_tasks()
+    if task_type == 'laboratory work' or task_type == 'practical work':
+        number = number_entry.get()
+        if course and task_type and number and deadline:
+            add_task(course, task_type, deadline, number)
+            load_tasks()
+    else:
+        number = None
+        if course and task_type and deadline:
+            add_task(course, task_type, deadline, number)
+            load_tasks()
 
 
 def load_tasks():
@@ -36,7 +42,7 @@ def load_tasks():
 
     for course, task_types in sorted_courses:
         course_node = tree.insert("", tk.END, text=course, open=True, tags=('course',))
-        for task_type in ['laboratory work', 'practical work', 'individual work']:  # Specify the desired order
+        for task_type in ['laboratory work', 'practical work', 'individual work']:  # Specify the desired order to display task types
             if task_type in task_types:
                 tasks = task_types[task_type]
 
@@ -51,14 +57,21 @@ def load_tasks():
                     elif task_type == 'practical work':
                         task_values_with_id = (f"Practical {task_values[3]}", task_values[4], task_values[5], task_values[6], task_values[7])
                     else:
-                        task_values_with_id = (task_values[2], task_values[4], task_values[5], task_values[6], task_values[7])  # Properly align the values
+                        task_values_with_id = (task_values[2], task_values[4], task_values[5], task_values[6], task_values[7])
                     # print(task_values[0], task_values[1], task_values[2], task_values_with_id)
                     tree.insert(task_type_node, tk.END, text=task_id, values=task_values_with_id, tags=('task',))
 
 
-def on_pull_tasks():
+def on_else_auth():
     else_pre_auth()
-    load_tasks()
+
+
+def on_else_collect():  # Not done
+    else_post_auth()
+
+    # Create a temporary database to view the collected data and decide what subject and their respective work type/s to import
+
+    # load_tasks()
 
 
 def on_task_type_change(event):
@@ -84,7 +97,7 @@ def on_tree_select(event):
         elif 'task' in item_tags:
             task_values = tree.item(selected_item, 'values')
             if task_values:
-                task_id.set(tree.item(selected_item)['text'])  # The ID of the task
+                task_id.set(tree.item(selected_item)['text'])
                 print('task id:', task_id.get())
                 course_name.set(tree.item(tree.parent(tree.parent(selected_item)))['text'])
                 task_type.set(tree.item(tree.parent(selected_item))['text'])
@@ -145,9 +158,9 @@ def on_delete_task():
         item_tags = tree.item(selected_item, 'tags')
         if 'task' in item_tags:
             task_id_val = tree.item(selected_item, 'text')
-            delete_task(task_id_val)  # Call the function to delete the task from the database
-            load_tasks()  # Reload tasks to update the tree view
-            on_discard_changes()  # Clear the fields
+            delete_task(task_id_val)
+            load_tasks()
+            on_discard_changes()
 
 
 def create_vertical_left_bar(left_frame):
@@ -170,10 +183,12 @@ def create_vertical_left_bar(left_frame):
     deadline_entry = tk.Entry(left_frame)
     deadline_entry.pack(pady=5)
 
-    tk.Button(left_frame, text="Add Task", command=on_add_task).pack(pady=20)
-    tk.Button(left_frame, text="Authenticate and pull tasks from ELSE", command=on_pull_tasks).pack(pady=20)
-    tk.Button(left_frame, text="Save the database to Dropbox", command=save_to_dropbox).pack(pady=20)
-    tk.Button(left_frame, text="Download the database from Dropbox", command=download_from_dropbox).pack(pady=20)
+    tk.Button(left_frame, text = "Add Task", command=on_add_task).pack(pady=20)
+    tk.Button(left_frame, text = "Pre-authentication on ELSE\nAuthenticate on ELSE", command=on_else_auth).pack(pady=10)
+    tk.Button(left_frame, text = "Post-authentication on ELSE\nCollect tasks from ELSE", command = on_else_collect).pack(pady = 10)
+    tk.Button(left_frame, text = "Save the database to Dropbox", command=save_to_dropbox).pack(pady=10)
+    tk.Button(left_frame, text = "Download the database from Dropbox", command=download_from_dropbox).pack(pady=10)
+    tk.Button(left_frame, text = "Post-authentication on Dropbox\nGrab the API token", command=download_from_dropbox).pack(pady=10)
 
 
 def create_horizontal_bottom_bar(edit_frame):
@@ -214,7 +229,7 @@ def create_horizontal_bottom_bar(edit_frame):
 
     tk.Button(edit_frame, text="Apply Changes", command=on_apply_changes).grid(row=0, column=7, padx=5, pady=5)
     tk.Button(edit_frame, text="Discard Changes", command=on_discard_changes).grid(row=1, column=7, padx=5, pady=5)
-    tk.Button(edit_frame, text="Delete Task", command=on_delete_task).grid(row=2, column=7, padx=5, pady=5)  # Add the new button
+    tk.Button(edit_frame, text="Delete Task", command=on_delete_task).grid(row=2, column=7, padx=5, pady=5)
 
 
 def create_central_box(center_frame):
@@ -270,5 +285,5 @@ def create_gui():
 
 
 if __name__ == "__main__":
-    create_table()  # Ensure the table is created
+    create_table()
     create_gui()

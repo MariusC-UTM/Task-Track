@@ -2,4 +2,5 @@
 # requests # no longer used
 bs4
 selenium
+requests==2.29.0 # required by dropbox
 dropbox
