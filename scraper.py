@@ -1,4 +1,5 @@
-import selenium
+from selenium import webdriver
+from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup  # will use for the easteregg
 from database import add_task
 
@@ -17,6 +18,7 @@ def dropbox_pre_auth():
 
 def dropbox_post_auth():
     print('Dropbox post auth')
+    #
 
 
 def easteregg():

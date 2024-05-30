@@ -19,23 +19,58 @@ Task Track este un program care faciliteaza gestionarea de sarcini in cadrul aca
 
 ## Instalare
 
-1. **Clonează Repositoriul:**
+1. **Clonează Repositoriul (GIT Console)**
+
 ```bash
 git clone https://github.com/MariusC-UTM/Task-Track.git
 ```
 
-2. **Instalează Bibliotecile Necesare:**
+2. **Navigheaza la Repositoriu**
+
+GIT Console:
+```bash
+cd Task-Track
+```
+
+CMD:
+```bash
+cd path\to\Task-Track
+```
+
+3. **Create a Virtual Environment (GIT Console or CMD)**
+
+```bash
+python -m venv venv
+```
+
+3. **Activate the Virtual Environment**
+
+Windows (CMD):
+```bash
+venv\Scripts\activate
+```
+
+Linux:
+```bash
+source venv/bin/activate
+```
+
+3. **Instalează Bibliotecile Necesare (CMD)**
+
+Global (not necessary):
 ```bash
 pip install -r requirements.txt
 ```
 
-3. **Rulează Programul:**
+Virtual Environment (required):
+```bash
+python -m pip install -r requirements.txt
+```
+
+4. **Rulează Programul (CMD)**
+
 ```bash
 python TaskTrack.py
-```
-sau
-```bash
-python3 TaskTrack.py
 ```
 
 ## Utilizare
