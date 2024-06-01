@@ -162,6 +162,15 @@ def on_delete_task():
             on_discard_changes()
 
 
+def on_upload_to_dropbox():
+    upload_to_dropbox()
+
+
+def on_download_from_dropbox():
+    download_from_dropbox()
+    load_tasks()
+
+
 def create_vertical_left_bar(left_frame):
     global course_entry, task_type_combobox, deadline_label, deadline_entry, number_label, number_entry
 
@@ -183,11 +192,11 @@ def create_vertical_left_bar(left_frame):
     deadline_entry.pack(pady=5)
 
     tk.Button(left_frame, text = "Add Task", command = on_add_task).pack(pady=20)
-    tk.Button(left_frame, text = "Pre-authentication on ELSE\nAuthenticate on ELSE", command=on_else_auth).pack(pady=10)
-    tk.Button(left_frame, text = "Post-authentication on ELSE\nCollect tasks from ELSE", command = on_else_collect).pack(pady = 10)
-    tk.Button(left_frame, text = "Upload the database to Dropbox", command = upload_to_dropbox).pack(pady=10)
-    tk.Button(left_frame, text = "Download the database from Dropbox", command = download_from_dropbox).pack(pady=10)
-    tk.Button(left_frame, text = "Post-authentication on Dropbox\nGrab the API token", command = download_from_dropbox).pack(pady=10)
+    tk.Button(left_frame, text = "Pre-authentication on ELSE\n- Authenticate on ELSE", command=on_else_auth).pack(pady=10)
+    tk.Button(left_frame, text = "Post-authentication on ELSE\n- Collect tasks from ELSE", command = on_else_collect).pack(pady = 10)
+    tk.Button(left_frame, text = "Upload the database to Dropbox", command = on_upload_to_dropbox).pack(pady=10)
+    tk.Button(left_frame, text = "Download the database from Dropbox", command = on_download_from_dropbox).pack(pady=10)
+    tk.Button(left_frame, text = "Post-authentication on Dropbox\n- Grab the API token", command = download_from_dropbox).pack(pady=10)
 
 
 def create_horizontal_bottom_bar(edit_frame):
